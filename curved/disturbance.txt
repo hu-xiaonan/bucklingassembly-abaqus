@@ -1,0 +1,24 @@
+# Disturbance data file
+#
+# This file defines the disturbance locations and orientations.
+#
+# Each line specifies a disturbance point.
+#
+# Disturbance format:
+#
+#   {X} {Y} {DEFLECTION}
+#
+#   where (X, Y) is the coordinate of disturbance location, and DEFLECTION is
+#   the normalized out-of-plane displacement at that point. Use 0, 1, or -1
+#   for DEFLECTION; do not enter actual displacement values. The program will
+#   automatically scale the disturbance according to the shell thickness.
+
+-1 -1 1
+-1 0 1
+-1 1 1
+0 -1 1
+0 0 1
+0 1 1
+1 -1 1
+1 0 1
+1 1 1
