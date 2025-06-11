@@ -282,7 +282,7 @@ Buckling-assembled 3D flexible structures can be conformed onto curved surfaces,
 
 Ultra-flexible structures are extremely difficult to assemble due to its extremely low stiffness, which can also lead to convergence issues in FEA when using implicit analysis. Explicit dynamics analysis is used for such simulations, see [Simulating buckling assembly of ultra-flexible structures](./ultraflexible/README.md).
 
-TODO
+<img src="./ultraflexible/assets/job_1.png" width="400">
 
 ### Simulating buckling assembly with explicit substrate modeling
 
