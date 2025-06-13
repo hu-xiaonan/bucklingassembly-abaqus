@@ -199,7 +199,7 @@ def M1070_create_bonding_bc():
     )
 
     EPS = 1e-6
-    unbonded_node_labels = set(n.label for n in nodes)
+    nonbonding_node_labels = set(n.label for n in nodes)
     counter = 0
     with open(MY_BONDING_INPUT_FILENAME, 'r') as f:
         bonding_txt_lines = f.readlines()
@@ -234,7 +234,7 @@ def M1070_create_bonding_bc():
 
         # Prevent applying redundant constraints to nodes that have already been constrained.
         bonding_nodes = bonding_nodes.sequenceFromLabels(
-            list(set(n.label for n in bonding_nodes) & unbonded_node_labels)
+            list(set(n.label for n in bonding_nodes) & nonbonding_node_labels)
         )
         if len(bonding_nodes) == 0:
             raise ValueError(
@@ -249,7 +249,7 @@ def M1070_create_bonding_bc():
             name='NODES-BONDING-{}'.format(counter+1),
             nodes=bonding_nodes,
         )
-        unbonded_node_labels -= set(n.label for n in bonding_nodes)
+        nonbonding_node_labels -= set(n.label for n in bonding_nodes)
 
         # Create a reference point at the center of the bonding area.
         rp_feature = assembly.ReferencePoint(point=[xc, yc, 0.0])
@@ -294,10 +294,10 @@ def M1070_create_bonding_bc():
             )
         counter += 1
 
-    # Create a set of unbonded nodes for later use.
+    # Create a set of non-bonding nodes for potential later use.
     assembly.Set(
-        name='NODES-UNBONDED',
-        nodes=nodes.sequenceFromLabels(list(unbonded_node_labels)),
+        name='NODES-NONBONDING',
+        nodes=nodes.sequenceFromLabels(list(nonbonding_node_labels)),
     )
 
     viewport = session.viewports['Viewport: 1']

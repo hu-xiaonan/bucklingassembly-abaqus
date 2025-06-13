@@ -13,7 +13,7 @@ import numpy as np
 # Abaqus tends to convert some names to uppercase when storing them to ODB, so
 # be careful with the capitalization of names.
 
-MY_BONDING_DISP_INPUT_FILENANE = 'bonding_disp.txt'
+MY_BONDING_DISP_INPUT_FILENAME = 'bonding_disp.txt'
 
 
 def M3000_init_model_3_restart_from_model_2():

@@ -25,7 +25,7 @@ MY_MESH_SEED_SIZE = 0.01
 MY_MESH_SEED_DEVIATION_FACTOR = 0.1  # Set to `None` to disable.
 MY_MESH_SEED_MIN_SIZE_FACTOR = 0.1
 MY_BONDING_INPUT_FILENAME = 'bonding.txt'
-MY_DISTURBANCE_INPUT_FILENANE = 'disturbance.txt'
+MY_DISTURBANCE_INPUT_FILENAME = 'disturbance.txt'
 MY_SUBSTRATE_SHRINKING_CENTER = [0, 0]
 MY_SUBSTRATE_SHRINKAGE = 0.3
 MY_DISTURBANCE_SCALE_FACTOR = 1.0  # SCALE_FACTOR := DISTURBANCE / SHELL_THICKNESS
@@ -168,7 +168,7 @@ def M1070_create_model_1_bonding_bc():
     nodes = instance.nodes
 
     EPS = 1e-6
-    unbonded_node_labels = set(n.label for n in nodes)
+    nonbonding_node_labels = set(n.label for n in nodes)
     counter = 0
     with open(MY_BONDING_INPUT_FILENAME, 'r') as f:
         bonding_txt_lines = f.readlines()
@@ -196,7 +196,7 @@ def M1070_create_model_1_bonding_bc():
 
         # Prevent applying redundant constraints to nodes that have already been constrained.
         bonding_nodes = bonding_nodes.sequenceFromLabels(
-            list(set(n.label for n in bonding_nodes) & unbonded_node_labels)
+            list(set(n.label for n in bonding_nodes) & nonbonding_node_labels)
         )
         if len(bonding_nodes) == 0:
             raise ValueError(
@@ -211,7 +211,7 @@ def M1070_create_model_1_bonding_bc():
             name='NODES-BONDING-{}'.format(counter+1),
             nodes=bonding_nodes,
         )
-        unbonded_node_labels -= set(n.label for n in bonding_nodes)
+        nonbonding_node_labels -= set(n.label for n in bonding_nodes)
 
         # Create a reference point at the center of the bonding area.
         rp_feature = assembly.ReferencePoint(point=[xc, yc, 0.0])
@@ -252,10 +252,10 @@ def M1070_create_model_1_bonding_bc():
             )
         counter += 1
 
-    # Create a set of unbonded nodes for later use.
+    # Create a set of non-bonding nodes for later use.
     assembly.Set(
-        name='NODES-UNBONDED',
-        nodes=nodes.sequenceFromLabels(list(unbonded_node_labels)),
+        name='NODES-NONBONDING',
+        nodes=nodes.sequenceFromLabels(list(nonbonding_node_labels)),
     )
 
     viewport = session.viewports['Viewport: 1']
@@ -271,24 +271,24 @@ def M1080_create_model_1_disturbance_bc():
     instance = assembly.instances['STRUCTURE']
     nodes = instance.nodes
 
-    unbonded_nodes = assembly.sets['NODES-UNBONDED'].nodes
-    unbonded_node_coords = np.asarray([n.coordinates for n in unbonded_nodes])
+    nonbonding_nodes = assembly.sets['NODES-NONBONDING'].nodes
+    nonbonding_node_coords = np.asarray([n.coordinates for n in nonbonding_nodes])
     disturbed_node_labels = set()
 
     # Create the single-node sets on which the displacement BCs are applied.
-    with open(MY_DISTURBANCE_INPUT_FILENANE) as f:
+    with open(MY_DISTURBANCE_INPUT_FILENAME) as f:
         input_lines = f.readlines()
     data_lines = [line for line in input_lines if not line.startswith('#')]
     counter = 0
     for x, y, deflection in np.loadtxt(data_lines, ndmin=2):
         # If Abaqus version > 6.14, we can use the method `getClosest`.
         #
-        # closest_node = unbonded_nodes.getClosest((x, y, 0.0))
+        # closest_node = nonbonding_nodes.getClosest((x, y, 0.0))
         #
         # However, to be compatible with Abaqus 6.14, we have to find the
         # closest node manually.
-        closest_node = unbonded_nodes[
-            np.argmin(np.hypot(unbonded_node_coords[:, 0]-x, unbonded_node_coords[:, 1]-y))
+        closest_node = nonbonding_nodes[
+            np.argmin(np.hypot(nonbonding_node_coords[:, 0]-x, nonbonding_node_coords[:, 1]-y))
         ]
         if closest_node.label in disturbed_node_labels:
             print(
