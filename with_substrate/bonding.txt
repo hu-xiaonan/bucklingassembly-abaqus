@@ -1,0 +1,24 @@
+# Bonding regions data file
+#
+# This file defines the regions used for bonding.
+#
+# Supported bonding shapes: circular and rectangular.
+#
+# Circular bonding format:
+#
+#   CIRCLE {XC} {YC} {R}
+#
+#   where XC, YC is the center coordinate of the circle and R is the radius.
+#
+# Rectangular bonding format:
+#
+#   RECT {X1} {Y1} {X2} {Y2}
+#
+#   where (X1, Y1) and (X2, Y2) are the coordinates of the opposite corners of
+#   the rectangle.
+
+CIRCLE 1 0 0.1
+CIRCLE 0 1 0.1
+CIRCLE -1 0 0.1
+CIRCLE 0 -1 0.1
+RECT -0.1 -0.1 0.1 0.1
