@@ -286,7 +286,7 @@ Ultra-flexible structures are extremely difficult to assemble due to its extreme
 
 ### Simulating buckling assembly with substrate-included modeling
 
-This simulation approach incorporates the substrate directly into the model, offering a more realistic depiction of the assembly process. For such simulations, see [Simulating buckling assembly with substrate modeling](./with_substrate/README.md).
+This simulation approach incorporates the substrate directly into the model, offering a more realistic depiction of the assembly process. For such simulations, see [Simulating buckling assembly with substrate-included modeling](./with_substrate/README.md).
 
 <img src="./with_substrate/assets/substrate_deformation.png" width="500">
 
