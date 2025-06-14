@@ -149,18 +149,18 @@ def M1070_create_model_1_bonding_bc():
         xc = float(line_values[1])
         yc = float(line_values[2])
         r = float(line_values[3])
-        rotable = len(line_values) > 4 and line_values[4].upper() == 'ROTABLE'
-        return xc, yc, r, rotable
+        rotatable = len(line_values) > 4 and line_values[4].upper() == 'ROTATABLE'
+        return xc, yc, r, rotatable
 
     def _parse_rectangular_bonding(line_values):
         x1 = float(line_values[1])
         y1 = float(line_values[2])
         x2 = float(line_values[3])
         y2 = float(line_values[4])
-        rotable = len(line_values) > 5 and line_values[5].upper() == 'ROTABLE'
+        rotatable = len(line_values) > 5 and line_values[5].upper() == 'ROTATABLE'
         x1, x2 = min(x1, x2), max(x1, x2)
         y1, y2 = min(y1, y2), max(y1, y2)
-        return x1, y1, x2, y2, rotable
+        return x1, y1, x2, y2, rotatable
 
     model = mdb.models['Model-1']
     assembly = model.rootAssembly
@@ -179,13 +179,13 @@ def M1070_create_model_1_bonding_bc():
 
         if values[0].upper() == 'CIRCLE':
             try:
-                xc, yc, r, rotable = _parse_circular_bonding(values)
+                xc, yc, r, rotatable = _parse_circular_bonding(values)
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
             bonding_nodes = nodes.getByBoundingCylinder([xc, yc, -EPS], [xc, yc, EPS], r+EPS)
         elif values[0].upper() == 'RECT':
             try:
-                x1, y1, x2, y2, rotable = _parse_rectangular_bonding(values)
+                x1, y1, x2, y2, rotatable = _parse_rectangular_bonding(values)
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
             bonding_nodes = nodes.getByBoundingBox(x1-EPS, y1-EPS, -EPS, x2+EPS, y2+EPS, EPS)
@@ -236,9 +236,9 @@ def M1070_create_model_1_bonding_bc():
             couplingType=KINEMATIC,
             u1=ON, u2=ON, u3=ON, ur1=ON, ur2=ON, ur3=ON,
         )
-        if rotable:
+        if rotatable:
             model.DisplacementBC(
-                name='BONDING-{}-ROTABLE'.format(counter+1),
+                name='BONDING-{}-ROTATABLE'.format(counter+1),
                 createStepName='Step-1',
                 region=refpoint_set,
                 u1=0, u2=0, u3=0, ur1=0, ur2=0, ur3=UNSET,
@@ -416,7 +416,7 @@ def M2030_create_model_2_bonding_bc():
             feature = assembly.features[refpoint_setname]
             coords_2d = np.asarray([feature.xValue, feature.yValue])
             disp = -MY_SUBSTRATE_SHRINKAGE*(coords_2d-MY_SUBSTRATE_SHRINKING_CENTER)
-            if '-ROTABLE' in bc_name:
+            if '-ROTATABLE' in bc_name:
                 model.DisplacementBC(
                     name=bc_name,
                     createStepName='Step-1',

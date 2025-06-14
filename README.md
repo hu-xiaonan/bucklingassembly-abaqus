@@ -54,18 +54,18 @@ You can find the main script and all required data files for classical buckling 
     #
     # Circular bonding format:
     #
-    #   CIRCLE {XC} {YC} {R} [ROTABLE]
+    #   CIRCLE {XC} {YC} {R} [ROTATABLE]
     #
     #   where XC, YC is the center coordinate of the circle and R is the radius.
     #
     # Rectangular bonding format:
     #
-    #   RECT {X1} {Y1} {X2} {Y2} [ROTABLE]
+    #   RECT {X1} {Y1} {X2} {Y2} [ROTATABLE]
     #
     #   where (X1, Y1) and (X2, Y2) are the coordinates of the opposite corners of
     #   the rectangle.
     #
-    # The optional ROTABLE keyword specifies if the bonding allows rotation about
+    # The optional ROTATABLE keyword specifies if the bonding allows rotation about
     # the Z-axis. If omitted, rotation is not permitted.
 
     CIRCLE 1 0 0.1
@@ -77,7 +77,7 @@ You can find the main script and all required data files for classical buckling 
 
     Lines starting with `#` are comments and will be ignored by the script. Each non-comment line specifies a bonding region, which can be either circular or rectangular.
 
-    The optional `ROTABLE` keyword determines whether the bonding region is allowed to rotate in the xy plane. For more details on how bonding regions are implemented in the simulation, see [the section below](#rotatable-and-non-rotatable-bonding-regions).
+    The optional `ROTATABLE` keyword determines whether the bonding region is allowed to rotate in the xy plane. For more details on how bonding regions are implemented in the simulation, see [the section below](#rotatable-and-non-rotatable-bonding-regions).
 
 5. **Data file for disturbance**
 
@@ -254,7 +254,7 @@ This script is tailored for classical buckling assembly involving biaxial substr
 
 The script supports both rotatable and non-rotatable bonding regions, as specified in the `bonding.txt` file. For rotatable bonding regions, the rotational degree of freedom (ur3) at the reference point is left free, allowing the bonding regions to rotate freely in the *xy* plane during the assembly process. For non-rotatable bonding regions, the rotational degrees of freedom are fully fixed, preventing any rotation of the bonding region reference points.
 
-<img width="600" src="./classical/assets/rotable_bonding_comparison.png">
+<img width="600" src="./classical/assets/rotatable_bonding_comparison.png">
 
 You might wonder when rotatable bonding regions are actually needed. In practice, almost never, since rotation is typically constrained by the substrate. However, the option is available if you wish to use it.
 

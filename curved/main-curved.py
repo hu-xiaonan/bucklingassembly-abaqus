@@ -51,7 +51,7 @@ def M3020_modify_model_3_bonding_bc_at_step_2():
         if bc_name.startswith('BONDING-'):
             bonding_label = int(bc_name.split('-')[1])
             u1, u2, u3, ur1, ur2, ur3 = loaded_data[bonding_label-1]
-            if 'ROTABLE' in bc_name:
+            if 'ROTATABLE' in bc_name:
                 model.boundaryConditions[bc_name].setValuesInStep(
                     stepName='Step-2',
                     u1=u1, u2=u2, u3=u3, ur1=ur1, ur2=ur2, ur3=UNSET,
