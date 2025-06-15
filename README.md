@@ -278,15 +278,15 @@ Buckling-assembled 3D flexible structures can be conformed onto curved surfaces,
 
 <img src="./curved/assets/poking-detail.png" width="400">
 
-### Simulating buckling assembly of ultra-flexible structures
+### Buckling assembly of ultra-flexible structures
 
-Ultra-flexible structures are extremely difficult to assemble due to its extremely low stiffness, which can also lead to convergence issues in FEA when using implicit analysis. Explicit dynamics analysis is used for such simulations, see [Simulating buckling assembly of ultra-flexible structures](./ultraflexible/README.md).
+Ultra-flexible structures are extremely difficult to assemble due to its extremely low stiffness, which can also lead to convergence issues in FEA when using implicit analysis. Explicit dynamics analysis is used for such simulations, see [Buckling assembly of ultra-flexible structures](./ultraflexible/README.md).
 
 <img src="./ultraflexible/assets/job_1.png" width="400">
 
-### Simulating buckling assembly with substrate-included modeling
+### Substrate-included buckling assembly simulation
 
-This simulation approach incorporates the substrate directly into the model, offering a more realistic depiction of the assembly process. For such simulations, see [Simulating buckling assembly with substrate-included modeling](./with_substrate/README.md).
+This simulation approach incorporates the substrate directly into the model, offering a more realistic depiction of the assembly process. For such simulations, see [Substrate-included buckling assembly simulation](./with_substrate/README.md).
 
 <img src="./with_substrate/assets/substrate_deformation.png" width="500">
 

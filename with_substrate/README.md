@@ -1,4 +1,4 @@
-# Simulating buckling assembly with substrate-included modeling
+# Substrate-included buckling assembly simulation
 
 This simulation method includes the substrate as part of the model, providing a more accurate representation of the assembly process. Compared to classical buckling assembly simulations, it requires additional meshing for the substrate and setup of contact interactions, increasing the model's complexity and computational requirements. Nevertheless, with the use of automation scripts, the workflow remains as straightforward as in the classical approach.
 
