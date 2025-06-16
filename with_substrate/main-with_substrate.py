@@ -24,7 +24,8 @@ MY_STRUCTURE_MESH_SEED_SIZE = 0.02
 MY_STRUCTURE_MESH_SEED_DEVIATION_FACTOR = 0.1  # Set to `None` to disable.
 MY_STRUCTURE_MESH_SEED_MIN_SIZE_FACTOR = 0.1
 
-MY_SUBSTRATE_SCALE = 3.0
+MY_SUBSTRATE_X_LEN = 3.0
+MY_SUBSTRATE_Y_LEN = 3.0
 MY_SUBSTRATE_MATERIAL_EMOD = 1e0
 MY_SUBSTRATE_SHELL_THICKNESS = 0.5
 MY_SUBSTRATE_MESH_SEED_SIZE = 0.05
@@ -144,8 +145,8 @@ def M1060_create_substrate_part():
 
     sketch = model.ConstrainedSketch(name='__profile__', sheetSize=200.0)
     sketch.rectangle(
-        point1=(-MY_SUBSTRATE_SCALE/2.0, -MY_SUBSTRATE_SCALE/2.0),
-        point2=(+MY_SUBSTRATE_SCALE/2.0, +MY_SUBSTRATE_SCALE/2.0),
+        point1=(-MY_SUBSTRATE_X_LEN/2.0, -MY_SUBSTRATE_Y_LEN/2.0),
+        point2=(+MY_SUBSTRATE_X_LEN/2.0, +MY_SUBSTRATE_Y_LEN/2.0),
     )
     part = model.Part(name='SUBSTRATE', dimensionality=THREE_D, type=DEFORMABLE_BODY)
     part.BaseSolidExtrude(sketch=sketch, depth=MY_SUBSTRATE_SHELL_THICKNESS)
@@ -456,54 +457,54 @@ def M1120_create_bonding_disp_bc():
     substrate_xneg_face_set = assembly.Set(
         name='FACES-SUBSTRATE-XNEG',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            -MY_SUBSTRATE_SCALE/2.0-EPS, -MY_SUBSTRATE_SCALE/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
-            -MY_SUBSTRATE_SCALE/2.0+EPS, +MY_SUBSTRATE_SCALE/2.0+EPS, +EPS,
+            -MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            -MY_SUBSTRATE_X_LEN/2.0+EPS, +MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
     substrate_xpos_face_set = assembly.Set(
         name='FACES-SUBSTRATE-XPOS',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            +MY_SUBSTRATE_SCALE/2.0-EPS, -MY_SUBSTRATE_SCALE/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
-            +MY_SUBSTRATE_SCALE/2.0+EPS, +MY_SUBSTRATE_SCALE/2.0+EPS, +EPS,
+            +MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            +MY_SUBSTRATE_X_LEN/2.0+EPS, +MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
     substrate_yneg_face_set = assembly.Set(
         name='FACES-SUBSTRATE-YNEG',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            -MY_SUBSTRATE_SCALE/2.0-EPS, -MY_SUBSTRATE_SCALE/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
-            +MY_SUBSTRATE_SCALE/2.0+EPS, -MY_SUBSTRATE_SCALE/2.0+EPS, +EPS,
+            -MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            +MY_SUBSTRATE_X_LEN/2.0+EPS, -MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
     substrate_ypos_face_set = assembly.Set(
         name='FACES-SUBSTRATE-YPOS',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            -MY_SUBSTRATE_SCALE/2.0-EPS, +MY_SUBSTRATE_SCALE/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
-            +MY_SUBSTRATE_SCALE/2.0+EPS, +MY_SUBSTRATE_SCALE/2.0+EPS, +EPS,
+            -MY_SUBSTRATE_X_LEN/2.0-EPS, +MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            +MY_SUBSTRATE_X_LEN/2.0+EPS, +MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
     substrate_xneg_disp_bc = model.DisplacementBC(
         name='SUBSTRATE-XNEG',
         createStepName='Step-1',
         region=substrate_xneg_face_set,
-        u1=-MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_SCALE/2.0,
+        u1=-MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_X_LEN/2.0,
     )
     substrate_xpos_disp_bc = model.DisplacementBC(
         name='SUBSTRATE-XPOS',
         createStepName='Step-1',
         region=substrate_xpos_face_set,
-        u1=+MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_SCALE/2.0,
+        u1=+MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_X_LEN/2.0,
     )
     substrate_yneg_disp_bc = model.DisplacementBC(
         name='SUBSTRATE-YNEG',
         createStepName='Step-1',
         region=substrate_yneg_face_set,
-        u2=-MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_SCALE/2.0,
+        u2=-MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_Y_LEN/2.0,
     )
     substrate_ypos_disp_bc = model.DisplacementBC(
         name='SUBSTRATE-YPOS',
         createStepName='Step-1',
         region=substrate_ypos_face_set,
-        u2=+MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_SCALE/2.0,
+        u2=+MY_SUBSTRATE_PRESTRAIN*MY_SUBSTRATE_Y_LEN/2.0,
     )
     substrate_xneg_disp_bc.setValuesInStep(stepName='Step-3', u1=0)
     substrate_xpos_disp_bc.setValuesInStep(stepName='Step-3', u1=0)
@@ -549,8 +550,8 @@ def M1120_create_bonding_disp_bc():
     substrate_top_interior_node_set = assembly.Set(
         name='NODES-SUBSTRATE-TOP-INTERIOR',
         nodes=assembly.instances['SUBSTRATE'].nodes.getByBoundingBox(
-            -MY_SUBSTRATE_SCALE/2.0+EPS, -MY_SUBSTRATE_SCALE/2.0+EPS, -EPS,
-            +MY_SUBSTRATE_SCALE/2.0-EPS, +MY_SUBSTRATE_SCALE/2.0-EPS, +EPS,
+            -MY_SUBSTRATE_X_LEN/2.0+EPS, -MY_SUBSTRATE_Y_LEN/2.0+EPS, -EPS,
+            +MY_SUBSTRATE_X_LEN/2.0-EPS, +MY_SUBSTRATE_Y_LEN/2.0-EPS, +EPS,
         ),
     )
     assembly.SetByBoolean(
