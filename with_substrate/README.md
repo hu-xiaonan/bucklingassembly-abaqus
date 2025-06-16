@@ -4,13 +4,13 @@ This simulation method includes the substrate as part of the model, providing a 
 
 <img src="./assets/assembly_with_substrate.gif" width="600">
 
-The FEA model consists of a hyperelastic substrate and a precursor, which is initially placed just above the substrate with a small gap. The simulation comprises three steps:
+The FEA model consists of a hyperelastic substrate and a structure, which is initially placed just above the substrate with a small gap. The simulation comprises three steps:
 
 1. **Step-1:** Pre-stretch the substrate to a specified prestrain.
 
-2. **Step-2:** Press the bonding regions of the precursor onto the substrate to bring them into contact, forming adhesion.
+2. **Step-2:** Press the bonding regions of the structure onto the substrate to bring them into contact, forming adhesion.
 
-3. **Step-3:** Release the prestrain, allowing the precursor to buckle and self-assemble.
+3. **Step-3:** Release the prestrain, allowing the structure to buckle and self-assemble.
 
 ## Details of the simulation
 
@@ -32,29 +32,19 @@ Two distinct contact interactions are defined in the simulation:
     - *Normal behavior:* Hard contact, separation allowed after contact.  
     - *Tangential behavior:* Frictionless.
 
-The top surface of the substrate and the corresponding surface of the precursor are each divided into complementary sets representing bonding and non-bonding regions. Contact interactions are assigned between matching sets on the precursor and substrate. Since the substrate is pre-stretched before bonding, the bonding region on the substrate is determined based on the applied prestrain during model setup.
+The top surface of the substrate and the corresponding surface of the structure are each divided into complementary sets representing bonding and non-bonding regions. Contact interactions are assigned between matching sets on the structure and substrate. Since the substrate is pre-stretched before bonding, the bonding region on the substrate is determined based on the applied prestrain during model setup.
 
-- **Contact status between the precursor and substrate after Step-2**
+- **Contact status (structure side) after Step-2**
 
     <img src="./assets/contact_status_step_2.png" width="400">
 
-- **Contact status between the precursor and substrate after Step-3**
+- **Contact status (structure side) after Step-3**
 
     <img src="./assets/contact_status_step_3.png" width="400">
 
-### The initial gap between precursor and substrate
-
-The precursor is initially positioned above the substrate, separated by a small gap defined by the parameter `MY_DISTURBANCE_SCALE_FACTOR`. In the simulation, this gap is often referred to as the "disturbance." 
-
-<img src="./assets/gap.png" width="400">
-
-During `Step-2`, displacement boundary conditions are applied to move the bonding regions of the precursor downward by the initial gap, bringing them into contact with the substrate. At the same time, a separate displacement boundary condition, named "disturbance," is applied to specific non-bonding nodes of the precursor (as specified in the `disturbance.txt` data file), keeping them at their original height (`u3=0`) above the substrate.
-
-As a result, after the bonding step, the bonding regions are pressed onto and bonded with the substrate, while the specified non-bonding nodes remain at their original height above the substrate. The height difference between these two regions corresponds to the initial gap. At the end of `Step-2` (which is also the beginning of `Step-3`), the structure is in a disturbed configuration, with the disturbance level equal to the initial gap -- hence the use of the term "disturbance" for this gap.
-
 ### Displacement boundary conditions
 
-- **Displacement boundary conditions of the precursor**
+- **Displacement boundary conditions of the structure**
 
     <img src="./assets/structure_disp_bc.png" width="400">
 
@@ -68,24 +58,23 @@ Three groups of displacement boundary conditions are applied in the simulation:
 
     The substrate is pre-stretched by applying a displacement boundary condition in `Step-1` to the side faces of the substrate, This BC is set to zero in `Step-3` to release the prestrain.
 
-2. **Bonding the precursor to the substrate**
+2. **Bonding the structure to the substrate**
 
-    In Step 2, two displacement boundary conditions are applied to the precursor:  
-
-    - The bonding regions are moved downward to contact the substrate.  
-
-    - The non-bonding nodes specified in data file `disturbance.txt` are held at their initial height above the substrate.  
-    Both conditions are deactivated in Step 3.
+    In `Step-2`, the structure is pressed downward onto the substrate to establish contact in the bonding regions. Once contact is achieved, this displacement boundary condition is removed in `Step-3`.
 
 3. **Controlling substrate motion and ensuring contact**
 
-    The exterior edges of the substrate's top surface are constrained with `u3=0` throughout all steps. This prevents rigid body motion along the z-axis. Additionally, the interior nodes of the substrate's top surface are also fixed at `u3=0` throughout `Step-2`, ensuring that all nodes in the bonding region of the precursor achieve proper contact with the substrate. In `Step-3`, this constraint on the interior top surface is removed, allowing them to move freely.
+    The exterior edges of the substrate's top surface are constrained with `u3=0` throughout all steps. This prevents rigid body motion along the z-axis. Additionally, the interior nodes of the substrate's top surface are also fixed at `u3=0` throughout `Step-2`, ensuring that all nodes in the bonding region of the structure achieve proper contact with the substrate. In `Step-3`, this constraint on the interior top surface is removed, allowing them to move freely.
+
+### Improving simulation convergence
+
+Because no external disturbance is applied to the structure, the assembly step (`Step-3`) can initially be difficult to converge. It is recommended to use a very small initial time increment (e.g., 1e-5, as used in the script) to improve convergence. Using a relatively large initial time increment (e.g., 1e-3) may appear acceptable at first but can lead to significant convergence problems in later steps.
 
 ## Modeling workflow
 
 1. Prepare the main script `main-with_substrate.py`.
 
-2. Prepare the required input files: `precursor.dxf`, `bonding.txt`, and `disturbance.txt`. **Note** that this simulation does not allow rotatable bonding regions, so the `bonding.txt` file should not contain any `ROTATABLE` keywords. **Additionally**, there is only one disturbance level in the simulation, which is specified in `main-with_substrate.py`, so the `disturbance.txt` file should contain only the disturbance coordinates.
+2. Prepare the required input files: `precursor.dxf` and `bonding.txt`. A disturbance file is not required. **Note** that this simulation is not compatible with rotatable bonding regions, so the `bonding.txt` file should not contain any `ROTATABLE` keywords.
 
 3. Edit the main script to configure parameters for the assembly process.
 

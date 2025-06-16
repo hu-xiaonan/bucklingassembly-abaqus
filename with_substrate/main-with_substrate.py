@@ -33,15 +33,12 @@ MY_SUBSTRATE_MESH_SEED_MIN_SIZE_FACTOR = 0.1
 
 MY_SUBSTRATE_PRESTRAIN = 0.5
 MY_BONDING_INPUT_FILENAME = 'bonding.txt'
-MY_DISTURBANCE_INPUT_FILENAME = 'disturbance.txt'
-MY_DISTURBANCE_SCALE_FACTOR = 1.0  # SCALE_FACTOR := DISTURBANCE / SHELL_THICKNESS
+MY_INITIAL_SEPARATION = 0.1
 
-MY_ENABLE_RESTART = False
 MY_FOUTPUT_VARIABLES = ['U', 'S', 'LE', 'CSTATUS']
 MY_STEP_1_FOUTPUT_NUM = 10  # Set to `None` to disable.
 MY_STEP_3_FOUTPUT_NUM = 10  # Set to `None` to disable.
-
-MY_STRUCTURE_DISTURBANCE = MY_STRUCTURE_SHELL_THICKNESS*MY_DISTURBANCE_SCALE_FACTOR
+MY_ENABLE_RESTART = False
 
 
 def M1000_new_model_1():
@@ -101,7 +98,7 @@ def M1040_create_structure_instance():
     assembly.Instance(name='STRUCTURE', part=part, dependent=OFF)
     assembly.translate(
         instanceList=['STRUCTURE'],
-        vector=(0.0, 0.0, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE),
+        vector=(0.0, 0.0, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION),
     )
 
     viewport = session.viewports['Viewport: 1']
@@ -250,7 +247,7 @@ def M1100_create_step():
     model.StaticStep(
         name='Step-3',
         previous='Step-2',
-        initialInc=1.0,
+        initialInc=1e-5,
         maxNumInc=9999,
         minInc=1e-5,
         maxInc=1.0,
@@ -314,10 +311,6 @@ def M1110_create_contact():
     substrate_top_elements = substrate_elements.sequenceFromLabels(
         [elem.label for node in substrate_top_nodes for elem in node.getElements()]
     )
-    substrate_top_surface = assembly.Surface(
-        name='SUBSTRATE-TOP',
-        face3Elements=substrate_top_elements,
-    )
 
     # Select nodes and elements in the bonding regions of the structure and
     # substrate based on the data file `MY_BONDING_INPUT_FILENAME`.
@@ -336,15 +329,15 @@ def M1110_create_contact():
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
             selected_structure_bonding_nodes += structure_nodes.getByBoundingCylinder(
-                center1=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE-EPS),
-                center2=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE+EPS),
+                center1=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS),
+                center2=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS),
                 radius=r+EPS,
             )
             # The following code only selects the elements that are completely
             # inside the cylinder (i.e., not touching the cylinder boundary).
             selected_structure_bonding_elements += structure_elements.getByBoundingCylinder(
-                center1=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE-EPS),
-                center2=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE+EPS),
+                center1=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS),
+                center2=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS),
                 radius=r+EPS,
             )
             # To ensure the substrate bonding regions fully cover the structure
@@ -366,12 +359,12 @@ def M1110_create_contact():
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
             selected_structure_bonding_nodes += structure_nodes.getByBoundingBox(
-                x1-EPS, y1-EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE-EPS,
-                x2+EPS, y2+EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE+EPS,
+                x1-EPS, y1-EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS,
+                x2+EPS, y2+EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS,
             )
             selected_structure_bonding_elements += structure_elements.getByBoundingBox(
-                x1-EPS, y1-EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE-EPS,
-                x2+EPS, y2+EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_STRUCTURE_DISTURBANCE+EPS,
+                x1-EPS, y1-EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS,
+                x2+EPS, y2+EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS,
             )
             # As explained above, we first select substrate nodes for later
             # element selection (outside this loop).
@@ -405,29 +398,20 @@ def M1110_create_contact():
         operation=DIFFERENCE,
         surfaces=(structure_bottom_surface, structure_bottom_bonding_surface),
     )
-    structure_node_set = assembly.Set(
-        name='NODES-STRUCTURE',
-        nodes=assembly.instances['STRUCTURE'].nodes,
-    )
-    structure_bonding_node_set = assembly.Set(
-        name='NODES-STRUCTURE-BONDING',
-        nodes=selected_structure_bonding_nodes,
-    )
-    assembly.SetByBoolean(
-        name='NODES-STRUCTURE-NONBONDING',
-        operation=DIFFERENCE,
-        sets=(structure_node_set, structure_bonding_node_set),
-    )
 
     # Similarly, create a pair of complementary surfaces for the substrate.
-    substrate_surface_bonding = assembly.Surface(
+    substrate_top_surface = assembly.Surface(
+        name='SUBSTRATE-TOP',
+        face3Elements=substrate_top_elements,
+    )
+    substrate_top_bonding_surface = assembly.Surface(
         name='SUBSTRATE-TOP-BONDING',
         face3Elements=selected_substrate_bonding_elements,
     )
     assembly.SurfaceByBoolean(
         name='SUBSTRATE-TOP-NONBONDING',
         operation=DIFFERENCE,
-        surfaces=(substrate_top_surface, substrate_surface_bonding),
+        surfaces=(substrate_top_surface, substrate_top_bonding_surface),
     )
 
     bonding_contact = model.ContactProperty('BONDING')
@@ -526,13 +510,17 @@ def M1120_create_bonding_disp_bc():
     substrate_yneg_disp_bc.setValuesInStep(stepName='Step-3', u2=0)
     substrate_ypos_disp_bc.setValuesInStep(stepName='Step-3', u2=0)
 
-    # Apply displacement BC for bonding of the structure to the substrate in
-    # Step-2.
+    # In Step-2, position the structure onto the substrate to form contact.
+    # This BC is deactivated in Step-3 after contact is made.
+    assembly.Set(
+        name='FACES-STRUCTURE',
+        faces=assembly.instances['STRUCTURE'].faces,
+    )
     model.DisplacementBC(
         name='STRUCTURE-BONDING',
         createStepName='Step-2',
-        region=assembly.sets['NODES-STRUCTURE-BONDING'],
-        u1=0, u2=0, u3=-MY_STRUCTURE_DISTURBANCE,
+        region=assembly.sets['FACES-STRUCTURE'],
+        u1=0, u2=0, u3=-MY_INITIAL_SEPARATION,
     )
     model.boundaryConditions['STRUCTURE-BONDING'].deactivate('Step-3')
 
@@ -591,54 +579,7 @@ def M1120_create_bonding_disp_bc():
     viewport.view.fitView()
 
 
-def M1130_create_disturbance_disp_bc():
-    model = mdb.models['Model-1']
-    assembly = model.rootAssembly
-    instance = assembly.instances['STRUCTURE']
-    nodes = instance.nodes
-
-    nonbonding_nodes = assembly.sets['NODES-STRUCTURE-NONBONDING'].nodes
-    nonbonding_node_coords = np.asarray([n.coordinates for n in nonbonding_nodes])
-    selected_disturbance_nodes = assembly.instances['STRUCTURE'].nodes[0:0]
-
-    # Create the single-node sets on which the displacement BCs are applied.
-    with open(MY_DISTURBANCE_INPUT_FILENAME) as f:
-        input_lines = f.readlines()
-    data_lines = [line for line in input_lines if not line.startswith('#')]
-    for x, y in np.loadtxt(data_lines, ndmin=2):
-        # If Abaqus version > 6.14, we can use the method `getClosest`.
-        #
-        # closest_node = nonbonding_nodes.getClosest((x, y, 0.0))
-        #
-        # However, to be compatible with Abaqus 6.14, we have to find the
-        # closest node manually.
-        closest_node = nonbonding_nodes[
-            np.argmin(np.hypot(nonbonding_node_coords[:, 0]-x, nonbonding_node_coords[:, 1]-y))
-        ]
-        selected_disturbance_nodes += nodes.sequenceFromLabels([closest_node.label])
-
-    disturbance_node_set = assembly.Set(
-        name='NODES-STRUCTURE-DISTURBANCE',
-        nodes=selected_disturbance_nodes,
-    )
-    # Disturbed nodes are forced to retain their initial separation from the
-    # substrate, therefore their "u3" is set to zero.
-    disturbance_disp_bc = model.DisplacementBC(
-        name='SUBSTRATE-DISTURBANCE',
-        createStepName='Step-1',
-        region=disturbance_node_set,
-        u3=0,
-    )
-    disturbance_disp_bc.deactivate('Step-3')
-
-    viewport = session.viewports['Viewport: 1']
-    viewport.setValues(displayedObject=assembly)
-    viewport.assemblyDisplay.setValues(step='Step-1')
-    viewport.assemblyDisplay.setValues(bcs=ON, constraints=ON)
-    viewport.view.fitView()
-
-
-def M1140_create_job_1_inp():
+def M1130_create_job_1_inp():
     job = mdb.Job(name='Job-1', model='Model-1')
     job.writeInput(consistencyChecking=OFF)
 
@@ -658,8 +599,7 @@ if __name__ == '__main__':
     M1100_create_step()
     M1110_create_contact()
     M1120_create_bonding_disp_bc()
-    M1130_create_disturbance_disp_bc()
-    M1140_create_job_1_inp()
+    M1130_create_job_1_inp()
 
     mdb.saveAs('model.cae')
 
