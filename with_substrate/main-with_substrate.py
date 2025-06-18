@@ -28,7 +28,7 @@ MY_SUBSTRATE_X_LEN = 3.0
 MY_SUBSTRATE_Y_LEN = 3.0
 MY_SUBSTRATE_MATERIAL_EMOD = 1e0
 MY_SUBSTRATE_SHELL_THICKNESS = 0.5
-MY_SUBSTRATE_MESH_SEED_SIZE = 0.05
+MY_SUBSTRATE_MESH_SEED_SIZE = 0.04
 MY_SUBSTRATE_MESH_SEED_DEVIATION_FACTOR = 0.1  # Set to `None` to disable.
 MY_SUBSTRATE_MESH_SEED_MIN_SIZE_FACTOR = 0.1
 
@@ -40,6 +40,9 @@ MY_FOUTPUT_VARIABLES = ['U', 'S', 'LE', 'CSTATUS']
 MY_STEP_1_FOUTPUT_NUM = 10  # Set to `None` to disable.
 MY_STEP_3_FOUTPUT_NUM = 10  # Set to `None` to disable.
 MY_ENABLE_RESTART = False
+
+MY_STEP_3_INITIAL_INC = 1e-5  # Step-3 convergence can be sensitive to this value.
+MY_STEP_3_MIN_INC = 1e-5
 
 
 def M1000_new_model_1():
@@ -84,7 +87,11 @@ def M1030_create_structure_material_and_section():
     )
     del part.sectionAssignments[:]
     part_face_set = part.Set(faces=part.faces, name='FACES-ALL')
-    part.SectionAssignment(region=part_face_set, sectionName='Section-1')
+    part.SectionAssignment(
+        region=part_face_set,
+        sectionName='Section-1',
+        offsetType=BOTTOM_SURFACE,
+    )
 
     viewport = session.viewports['Viewport: 1']
     viewport.setValues(displayedObject=part)
@@ -99,7 +106,7 @@ def M1040_create_structure_instance():
     assembly.Instance(name='STRUCTURE', part=part, dependent=OFF)
     assembly.translate(
         instanceList=['STRUCTURE'],
-        vector=(0.0, 0.0, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION),
+        vector=(0.0, 0.0, MY_INITIAL_SEPARATION),
     )
 
     viewport = session.viewports['Viewport: 1']
@@ -248,9 +255,9 @@ def M1100_create_step():
     model.StaticStep(
         name='Step-3',
         previous='Step-2',
-        initialInc=1e-5,
+        initialInc=MY_STEP_3_INITIAL_INC,
         maxNumInc=9999,
-        minInc=1e-5,
+        minInc=MY_STEP_3_MIN_INC,
         maxInc=1.0,
         nlgeom=ON,
     )
@@ -330,15 +337,15 @@ def M1110_create_contact():
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
             selected_structure_bonding_nodes += structure_nodes.getByBoundingCylinder(
-                center1=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS),
-                center2=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS),
+                center1=(xc, yc, MY_INITIAL_SEPARATION-EPS),
+                center2=(xc, yc, MY_INITIAL_SEPARATION+EPS),
                 radius=r+EPS,
             )
             # The following code only selects the elements that are completely
             # inside the cylinder (i.e., not touching the cylinder boundary).
             selected_structure_bonding_elements += structure_elements.getByBoundingCylinder(
-                center1=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS),
-                center2=(xc, yc, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS),
+                center1=(xc, yc, MY_INITIAL_SEPARATION-EPS),
+                center2=(xc, yc, MY_INITIAL_SEPARATION+EPS),
                 radius=r+EPS,
             )
             # To ensure the substrate bonding regions fully cover the structure
@@ -360,12 +367,12 @@ def M1110_create_contact():
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
             selected_structure_bonding_nodes += structure_nodes.getByBoundingBox(
-                x1-EPS, y1-EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS,
-                x2+EPS, y2+EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS,
+                x1-EPS, y1-EPS, MY_INITIAL_SEPARATION-EPS,
+                x2+EPS, y2+EPS, MY_INITIAL_SEPARATION+EPS,
             )
             selected_structure_bonding_elements += structure_elements.getByBoundingBox(
-                x1-EPS, y1-EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION-EPS,
-                x2+EPS, y2+EPS, MY_STRUCTURE_SHELL_THICKNESS/2.0+MY_INITIAL_SEPARATION+EPS,
+                x1-EPS, y1-EPS, MY_INITIAL_SEPARATION-EPS,
+                x2+EPS, y2+EPS, MY_INITIAL_SEPARATION+EPS,
             )
             # As explained above, we first select substrate nodes for later
             # element selection (outside this loop).
@@ -420,7 +427,7 @@ def M1110_create_contact():
     bonding_contact.TangentialBehavior(formulation=ROUGH)
     model.SurfaceToSurfaceContactStd(
         name='BONDING',
-        createStepName='Step-2',
+        createStepName='Step-3',
         master=assembly.surfaces['SUBSTRATE-TOP-BONDING'],
         slave=assembly.surfaces['STRUCTURE-BOTTOM-BONDING'],
         sliding=FINITE,
@@ -433,7 +440,7 @@ def M1110_create_contact():
     nonbonding_contact.TangentialBehavior(formulation=FRICTIONLESS)
     model.SurfaceToSurfaceContactStd(
         name='NONBONDING',
-        createStepName='Step-2',
+        createStepName='Step-3',
         master=assembly.surfaces['SUBSTRATE-TOP-NONBONDING'],
         slave=assembly.surfaces['STRUCTURE-BOTTOM-NONBONDING'],
         sliding=FINITE,

@@ -77,7 +77,11 @@ def M1030_create_material_and_section():
     )
     del part.sectionAssignments[:]
     part_face_set = part.Set(faces=part.faces, name='FACES-ALL')
-    part.SectionAssignment(region=part_face_set, sectionName='Section-1')
+    part.SectionAssignment(
+        region=part_face_set,
+        sectionName='Section-1',
+        offsetType=BOTTOM_SURFACE,
+    )
 
     viewport = session.viewports['Viewport: 1']
     viewport.setValues(displayedObject=part)

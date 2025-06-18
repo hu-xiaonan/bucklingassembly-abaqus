@@ -85,7 +85,11 @@ def M1030_create_material_and_section():
     )
     del part.sectionAssignments[:]
     part_face_set = part.Set(faces=part.faces, name='FACES-ALL')
-    part.SectionAssignment(region=part_face_set, sectionName='Section-1')
+    part.SectionAssignment(
+        region=part_face_set,
+        sectionName='Section-1',
+        offsetType=BOTTOM_SURFACE,
+    )
 
     viewport = session.viewports['Viewport: 1']
     viewport.setValues(displayedObject=part)
@@ -98,7 +102,6 @@ def M1040_create_instance():
     part = model.parts['STRUCTURE']
     assembly = model.rootAssembly
     assembly.Instance(name='STRUCTURE', part=part, dependent=OFF)
-    assembly.translate(instanceList=['STRUCTURE'], vector=[0.0, 0.0, MY_SHELL_THICKNESS/2.0])
 
     viewport = session.viewports['Viewport: 1']
     viewport.setValues(displayedObject=assembly)
@@ -213,20 +216,13 @@ def M1070_create_bonding_bc():
                 xc, yc, r, rotatable = _parse_circular_bonding(values)
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
-            bonding_nodes = nodes.getByBoundingCylinder(
-                [xc, yc, MY_SHELL_THICKNESS/2.0-EPS],
-                [xc, yc, MY_SHELL_THICKNESS/2.0+EPS],
-                r+EPS,
-            )
+            bonding_nodes = nodes.getByBoundingCylinder([xc, yc, -EPS], [xc, yc, +EPS],r+EPS)
         elif values[0].upper() == 'RECT':
             try:
                 x1, y1, x2, y2, rotatable = _parse_rectangular_bonding(values)
             except (AssertionError, ValueError):
                 raise ValueError('Invalid bonding format at line {}: {}'.format(line_num+1, line))
-            bonding_nodes = nodes.getByBoundingBox(
-                x1-EPS, y1-EPS, MY_SHELL_THICKNESS/2.0-EPS,
-                x2+EPS, y2+EPS, MY_SHELL_THICKNESS/2.0+EPS,
-            )
+            bonding_nodes = nodes.getByBoundingBox(x1-EPS, y1-EPS, -EPS, x2+EPS, y2+EPS, +EPS)
             xc = 0.5*(x1+x2)
             yc = 0.5*(y1+y2)
         else:

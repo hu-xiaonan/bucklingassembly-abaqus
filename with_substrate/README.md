@@ -8,9 +8,9 @@ The FEA model consists of a hyperelastic substrate and a structure, which is ini
 
 1. **Step-1:** Pre-stretch the substrate to a specified prestrain.
 
-2. **Step-2:** Press the bonding regions of the structure onto the substrate to bring them into contact, forming adhesion.
+2. **Step-2:** Press the bonding regions of the structure onto the substrate.
 
-3. **Step-3:** Release the prestrain, allowing the structure to buckle and self-assemble.
+3. **Step-3:** Establish contact interactions between the substrate and the structure. Release the prestrain in the substrate, allowing the structure to buckle and self-assemble.
 
 ## Details of the simulation
 
@@ -25,22 +25,24 @@ The substrate is modeled as a Neo-Hookean solid. In the script, the Neo-Hookean 
 Two distinct contact interactions are defined in the simulation:
 
 1. **Bonding regions:**  
-    - *Normal behavior:* Hard contact, separation not allowed after contact.  
-    - *Tangential behavior:* Rough.
+    - **Normal behavior:** Hard contact, separation not allowed after contact.  
+    - **Tangential behavior:** Rough.
 
 2. **Non-bonding regions:**  
-    - *Normal behavior:* Hard contact, separation allowed after contact.  
-    - *Tangential behavior:* Frictionless.
+    - **Normal behavior:** Hard contact, separation allowed after contact.  
+    - **Tangential behavior:** Frictionless.
 
 The top surface of the substrate and the corresponding surface of the structure are each divided into complementary sets representing bonding and non-bonding regions. Contact interactions are assigned between matching sets on the structure and substrate. Since the substrate is pre-stretched before bonding, the bonding region on the substrate is determined based on the applied prestrain during model setup.
 
-- **Contact status (structure side) after Step-2**
+- **Contact status (structure side) at the beginning of Step-3**
 
-    <img src="./assets/contact_status_step_2.png" width="400">
+    <img src="./assets/contact_status_0.png" width="400">
 
-- **Contact status (structure side) after Step-3**
+- **Contact status (structure side) at the end of Step-3**
 
-    <img src="./assets/contact_status_step_3.png" width="400">
+    <img src="./assets/contact_status_1.png" width="400">
+
+Note that the contact interaction is established in `Step-3`. This approach helps the contact detection work correctly. If the contact interaction is defined in `Step-2`, Abaqus may sometimes fail to detect contact between the structure and the substrate, since the structure can attach to the substrate within a single time increment, potentially causing the contact algorithm to miss the interaction.
 
 ### Displacement boundary conditions
 
@@ -60,15 +62,15 @@ Three groups of displacement boundary conditions are applied in the simulation:
 
 2. **Bonding the structure to the substrate**
 
-    In `Step-2`, the structure is pressed downward onto the substrate to establish contact in the bonding regions. Once contact is achieved, this displacement boundary condition is removed in `Step-3`.
+    In `Step-2`, the structure is pressed downward onto the substrate. At the beginning of `Step-3`, the contact interaction is established between the substrate and the structure. The displacement boundary condition is then removed.
 
 3. **Controlling substrate motion and ensuring contact**
 
-    The exterior edges of the substrate's top surface are constrained with `u3=0` throughout all steps. This prevents rigid body motion along the z-axis. Additionally, the interior nodes of the substrate's top surface are also fixed at `u3=0` throughout `Step-2`, ensuring that all nodes in the bonding region of the structure achieve proper contact with the substrate. In `Step-3`, this constraint on the interior top surface is removed, allowing them to move freely.
+    The **exterior** edges of the substrate's top surface are constrained with `u3=0` throughout all steps to prevent rigid body motion along the z-axis. Additionally, the **interior** nodes of the substrate's top surface are fixed at `u3=0` during `Step-2`, ensuring that all nodes in the bonding region of the structure meet the substrate. In `Step-3`, this constraint on the interior top surface is removed, allowing these nodes to move freely.
 
 ### Improving simulation convergence
 
-Because no external disturbance is applied to the structure, the assembly step (`Step-3`) can initially be difficult to converge. It is recommended to use a very small initial time increment (e.g., 1e-5, as used in the script) to improve convergence. Using a relatively large initial time increment (e.g., 1e-3) may appear acceptable at first but can lead to significant convergence problems in later steps.
+Because no external disturbance is applied to the structure, the assembly step (`Step-3`) can be difficult to converge initially. From experience, it is recommended to use a very small initial time increment (e.g., 1e-5, as used in the script) to improve convergence. Using a relatively large initial time increment (e.g., 1e-3) may appear acceptable at first but can lead to significant convergence problems in later steps.
 
 ## Modeling workflow
 

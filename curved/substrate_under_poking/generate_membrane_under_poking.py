@@ -94,10 +94,12 @@ del membrane_part.sectionAssignments[:]
 membrane_part.SectionAssignment(
     region=membrane_part.sets['CELLS-ELASTIC'],
     sectionName='HOMOSHELL-ELASTOMER',
+    offsetType=MIDDLE_SURFACE,
 )
 membrane_part.SectionAssignment(
     region=membrane_part.sets['CELLS-RIGID'],
     sectionName='HOMOSHELL-RIGID',
+    offsetType=MIDDLE_SURFACE,
 )
 
 membrane_instance = assembly.Instance(name='MEMBRANE', part=membrane_part, dependent=OFF)

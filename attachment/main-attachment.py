@@ -13,7 +13,7 @@ MY_ATTACHMENT_DXF_NAME = 'attachment'
 MY_ATTACHMENT_MATERIAL_EMOD = 79e3
 MY_ATTACHMENT_MATERIAL_POISON = 0.42
 MY_ATTACHMENT_SHELL_THICKNESS = 10e-6
-MY_ATTACHMENT_Z_OFFSET = 5e-3
+MY_ATTACHMENT_Z_OFFSET = 10e-3  # Offset relative to the carrier bottom surface.
 MY_ATTACHMENT_MESH_SEED_SIZE = 0.01
 MY_ATTACHMENT_MESH_SEED_DEVIATION_FACTOR = 0.1  # Set to `None` to disable.
 MY_ATTACHMENT_MESH_SEED_MIN_SIZE_FACTOR = 0.1
@@ -54,7 +54,11 @@ def M1030_create_attachment_material_and_section():
     )
     del part.sectionAssignments[:]
     part_face_set = part.Set(faces=part.faces, name='FACES-ALL')
-    part.SectionAssignment(region=part_face_set, sectionName='Section-ATTACHMENT')
+    part.SectionAssignment(
+        region=part_face_set,
+        sectionName='Section-ATTACHMENT',
+        offsetType=MIDDLE_SURFACE,
+    )
 
     viewport = session.viewports['Viewport: 1']
     viewport.setValues(displayedObject=part)
@@ -64,8 +68,8 @@ def M1030_create_attachment_material_and_section():
 
 def M1040_create_attachment_instance():
     model = mdb.models[MY_CARRIER_MODEL_NAME]
-    part = model.parts['ATTACHMENT']
     assembly = model.rootAssembly
+    part = model.parts['ATTACHMENT']
     instance = assembly.Instance(name='ATTACHMENT', part=part, dependent=OFF)
     assembly.translate(
         instanceList=[instance.name],
