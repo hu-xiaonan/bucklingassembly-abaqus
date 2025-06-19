@@ -290,32 +290,6 @@ This simulation approach incorporates the substrate directly into the model, off
 
 <img src="./with_substrate/assets/substrate_deformation.png" width="500">
 
-### Buckling assembly with bilayer ribbon network
-
-This assembly method was introduced in JPMS 2024.
-
-TODO
-
-### Buckling assembly considering interfacial adhesion
-
-This assembly method takes into account the interfacial adhesion between the precursors and the substrate.
-
-TODO
-
-### Tensile buckling assembly of single-layer structures
-
-This assembly method is to be introduced in Science Advances 2025.
-
-TODO
-
-### Tensile buckling assembly of multilayer structures
-
-This assembly method is to be introduced in Science Advances 2025.
-
-TODO
-
-### Tensile behavior of serpentine structures
-
-This simulation is targeted at a kind of serpentine ribbon structure with ultra-high stretchability. The simulation considers the interation with the substrate.
+### Buckling assembly with cohesive behavior
 
 TODO
