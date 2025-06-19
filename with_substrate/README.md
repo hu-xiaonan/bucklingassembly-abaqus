@@ -68,9 +68,9 @@ Three groups of displacement boundary conditions are applied in the simulation:
 
     The **exterior** edges of the substrate's top surface are constrained with `u3=0` throughout all steps to prevent rigid body motion along the z-axis. Additionally, the **interior** nodes of the substrate's top surface are fixed at `u3=0` during `Step-2`, ensuring that all nodes in the bonding region of the structure meet the substrate. In `Step-3`, this constraint on the interior top surface is removed, allowing these nodes to move freely.
 
-### Improving simulation convergence
+### Step increment controls
 
-Because no external disturbance is applied to the structure, the assembly step (`Step-3`) can be difficult to converge initially. From experience, it is recommended to use a very small initial time increment (e.g., 1e-5, as used in the script) to improve convergence. Using a relatively large initial time increment (e.g., 1e-3) may appear acceptable at first but can lead to significant convergence problems in later steps.
+Because no external disturbance is applied to the structure, the assembly step (`Step-3`) can be difficult to converge initially. The minimum time increment should be set to a small value (e.g., 1e-10) to allow the solver to use smaller increments during the assembly process.
 
 ## Modeling workflow
 

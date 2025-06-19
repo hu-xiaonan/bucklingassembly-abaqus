@@ -41,9 +41,6 @@ MY_STEP_1_FOUTPUT_NUM = 10  # Set to `None` to disable.
 MY_STEP_3_FOUTPUT_NUM = 10  # Set to `None` to disable.
 MY_ENABLE_RESTART = False
 
-MY_STEP_3_INITIAL_INC = 1e-5  # Step-3 convergence can be sensitive to this value.
-MY_STEP_3_MIN_INC = 1e-5
-
 
 def M1000_new_model_1():
     model = mdb.Model(name='Model-1', modelType=STANDARD_EXPLICIT)
@@ -255,9 +252,9 @@ def M1100_create_step():
     model.StaticStep(
         name='Step-3',
         previous='Step-2',
-        initialInc=MY_STEP_3_INITIAL_INC,
+        initialInc=1.0,
         maxNumInc=9999,
-        minInc=MY_STEP_3_MIN_INC,
+        minInc=1e-15,
         maxInc=1.0,
         nlgeom=ON,
     )
