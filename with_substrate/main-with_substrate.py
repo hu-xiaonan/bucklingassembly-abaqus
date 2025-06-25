@@ -175,7 +175,7 @@ def M1070_create_substrate_material_and_section():
         testData=OFF,
         type=NEO_HOOKE, 
         volumetricResponse=VOLUMETRIC_DATA,
-        table=[get_neohooke_coeff(MY_SUBSTRATE_MATERIAL_EMOD, 0.5)],
+        table=[get_neohooke_coeff(MY_SUBSTRATE_MATERIAL_EMOD, 0.49)],
     )
     model.HomogeneousSolidSection(name='Section-2', material='Material-2')
     del part.sectionAssignments[:]

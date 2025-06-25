@@ -16,7 +16,9 @@ The FEA model consists of a hyperelastic substrate and a structure, which is ini
 
 ### Hyperelastic substrate
 
-The substrate is modeled as an incompressible Neo-Hookean solid. In the script, the Neo-Hookean coefficient $C_{10}$ is determined by the elastic modulus of the substrate, and the volumetric coefficient $D_1$ is set to zero. Hybrid elements are used for the substrate to account for incompressibility. Additionally, because the elements surrounding the bonding region can undergo large distortions, it is recommended to use reduced-integration, first-order elements, as described in the Abaqus documentation on *Solid (continuum) elements*. As a result, the substrate is meshed with C3D8RH, C3D6H, or C3D4H elements in the script.
+The substrate is modeled as a Neo-Hookean hyperelastic material. In the script, the Neo-Hookean parameter $C_{10}$ is calculated based on the elastic modulus, while the parameter $D_1$ is set according to the bulk modulus, which is determined from the Poisson's ratio (specified as 0.49 for near-incompressibility).
+
+Because the material is nearly incompressible, hybrid elements are used for the substrate to account for incompressibility. Additionally, because the elements surrounding the bonding region can undergo large distortions, it is recommended to use reduced-integration, first-order elements, as described in the Abaqus documentation on *Solid (continuum) elements*. As a result, the substrate is meshed with C3D8RH, C3D6H, or C3D4H elements in the script.
 
 ### Contact interactions
 
