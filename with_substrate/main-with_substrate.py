@@ -515,16 +515,22 @@ def M1120_create_bonding_disp_bc():
     substrate_yneg_disp_bc.setValuesInStep(stepName='Step-3', u2=0)
     substrate_ypos_disp_bc.setValuesInStep(stepName='Step-3', u2=0)
 
-    # In Step-2, position the structure onto the substrate to form contact.
-    # This BC is deactivated in Step-3 after contact is made.
+    # Apply boundary conditions to the structure:
+    # - Step-1: Hold the structure in place.
+    # - Step-2: Move the structure onto the substrate to establish contact.
+    # - Step-3: Deactivate this BC after contact is established.
     assembly.Set(
         name='FACES-STRUCTURE',
         faces=assembly.instances['STRUCTURE'].faces,
     )
     model.DisplacementBC(
         name='STRUCTURE-BONDING',
-        createStepName='Step-2',
+        createStepName='Step-1',
         region=assembly.sets['FACES-STRUCTURE'],
+        u1=0, u2=0, u3=0,
+    )
+    model.boundaryConditions['STRUCTURE-BONDING'].setValuesInStep(
+        stepName='Step-2',
         u1=0, u2=0, u3=-MY_INITIAL_SEPARATION,
     )
     model.boundaryConditions['STRUCTURE-BONDING'].deactivate('Step-3')
