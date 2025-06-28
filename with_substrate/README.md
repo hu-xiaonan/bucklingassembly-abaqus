@@ -22,19 +22,19 @@ Because the material is nearly incompressible, hybrid elements are used for the 
 
 ### Contact interactions
 
+This simulation uses surface-to-surface contact. Two contact pairs are defined: the top surface of the substrate and the bottom surface of the structure are each split into complementary sets for the bonding and non-bonding regions. Contact interactions are then assigned between the corresponding sets on the structure and substrate. Because the substrate is pre-stretched before bonding, the bonding region on the substrate should correspond to its initial (undeformed) configuration. The bonding region of the substrate is automatically determined in the script based on the specified prestrain.
+
 <img src="./assets/contact_interaction.png" width="600">
 
-Two distinct contact interactions are defined in the simulation:
+Note that the contact interaction is established in `Step-3`. This is a workaround to help the contact detection work correctly. If the contact interaction is defined in `Step-2`, Abaqus may sometimes fail to detect contact between the structure and the substrate, since the structure can attach to the substrate within a single iteration, potentially causing the contact algorithm to miss the interaction.
 
-1. **Bonding regions:**  
-    - **Normal behavior:** Hard contact, separation not allowed after contact.  
-    - **Tangential behavior:** Rough.
+The interaction properties for the bonding region are **hard contact with separation NOT allowed after contact** as the normal behavior, and **rough** as the tangential behavior. Note that rough contact can make convergence difficult, and Abaqus will always issue a warning about this in the DAT file.
 
-2. **Non-bonding regions:**  
-    - **Normal behavior:** Hard contact, separation allowed after contact.  
-    - **Tangential behavior:** Frictionless.
+While cohesive behavior can be a good alternative to rough contact, it has limitations in implicit analysis. Specifically, cohesive behavior is not compatible with general contact (standard), and it requires a continuous bonding region for each surface-to-surface contact definition. For these reasons, rough contact is used here for simplicity.
 
-The top surface of the substrate and the corresponding surface of the structure are each divided into complementary sets representing bonding and non-bonding regions. Contact interactions are assigned between matching sets on the structure and substrate. Since the substrate is pre-stretched before bonding, the bonding region on the substrate is determined based on the applied prestrain during model setup.
+The interaction properties for the non-bonding region are **hard contact with separation allowed after contact** as the normal behavior, and **frictionless** as the tangential behavior. Incidentally, if tangential behavior is not defined in the interaction property, Abaqus uses frictionless contact by default. However, the script explicitly specifies frictionless tangential behavior for clarity.
+
+The contact status can be output and visualized. Remember to select `CSTATUS` in the field output request for `Step-3`. The following images show the contact status at the beginning and end of `Step-3`:
 
 - **Contact status (structure side) at the beginning of Step-3**
 
@@ -43,8 +43,6 @@ The top surface of the substrate and the corresponding surface of the structure 
 - **Contact status (structure side) at the end of Step-3**
 
     <img src="./assets/contact_status_1.png" width="400">
-
-Note that the contact interaction is established in `Step-3`. This approach helps the contact detection work correctly. If the contact interaction is defined in `Step-2`, Abaqus may sometimes fail to detect contact between the structure and the substrate, since the structure can attach to the substrate within a single time increment, potentially causing the contact algorithm to miss the interaction.
 
 ### Displacement boundary conditions
 
