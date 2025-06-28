@@ -42,14 +42,13 @@ In practice, the primary interest is usually the deformed 3D shape of the struct
 
 5. Submit the generated `Job-1.inp` file either via the command line or by clicking "Submit" in the Abaqus CAE job manager.
 
-    **Note:** Double precision is not enabled by default in the script. To enable double precision, use one of the following methods:
+    - **Abaqus CAE job manager:**  
 
+      The script sets the job to use double precision. In the Job Manager, this appears under *Precision > Abaqus/Explicit Precision* as "Double - Analysis + Packager".
+    
     - **Command line:**  
+
+    When submitting the job from the command line, the double precision option needs to be explicitly specified, as shown below.
 
       ```bash
       abaqus job=Job-1 double=both
-      ```
-
-    - **Abaqus CAE job manager:**  
-
-        In the job settings dialog, go to the **Precision** tab and select "Double - Analysis + Packager" for Abaqus/Explicit Precision.

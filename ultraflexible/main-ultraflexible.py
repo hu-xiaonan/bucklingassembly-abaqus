@@ -366,7 +366,11 @@ def M1090_create_general_contact():
 
 
 def M1100_create_job_1_inp():
-    job = mdb.Job(name='Job-1', model='Model-1')
+    job = mdb.Job(
+        name='Job-1',
+        model='Model-1',
+        explicitPrecision=DOUBLE_PLUS_PACK,
+    )
     job.writeInput(consistencyChecking=OFF)
 
 
