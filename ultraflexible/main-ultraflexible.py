@@ -26,7 +26,7 @@ MY_MESH_SEED_DEVIATION_FACTOR = 0.1  # Set to `None` to disable.
 MY_MESH_SEED_MIN_SIZE_FACTOR = 0.1
 MY_VIRTUAL_TOPOLOGY_SHORT_EDGE_THRESHOLD = 0.01  # Set to `None` to disable.
 MY_BONDING_INPUT_FILENAME = 'bonding.txt'
-MY_MASS_SCALING = 1e4  # Set to `None` to disable.
+MY_MASS_SCALING_FACTOR = 1e4  # Set to `None` to disable.
 MY_RAYLEIGH_DAMPING_COEFFICIENTS = (1e2, 0.0, 0.0, 0.0)  # (alpha, beta, composite, structural)
 MY_SUBSTRATE_SHRINKING_CENTER = [0, 0]
 MY_SUBSTRATE_SHRINKAGE = 0.5
@@ -153,11 +153,11 @@ def M1050_create_mesh():
 def M1060_create_step():
     model = mdb.models['Model-1']
     model.ExplicitDynamicsStep(name='Step-1', previous='Initial')
-    if MY_MASS_SCALING is not None:
+    if MY_MASS_SCALING_FACTOR is not None:
         model.steps['Step-1'].setValues(
-            massScaling=(
-                (SEMI_AUTOMATIC, MODEL, AT_BEGINNING, MY_MASS_SCALING, 0.0, None, 0, 0, 0.0, 0.0, 0, None),
-            )
+            massScaling=[
+                (SEMI_AUTOMATIC, MODEL, AT_BEGINNING, MY_MASS_SCALING_FACTOR, 0.0, None, 0, 0, 0.0, 0.0, 0, None),
+            ]
         )
     field_output_request = model.FieldOutputRequest(
         name='F-Output-1',
