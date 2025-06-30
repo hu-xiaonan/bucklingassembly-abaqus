@@ -265,10 +265,6 @@ def M1100_create_step():
             overlay=ON,
             timeMarks=OFF,
         )
-    for k in model.fieldOutputRequests.keys():
-        del model.fieldOutputRequests[k]
-    for k in model.historyOutputRequests.keys():
-        del model.historyOutputRequests[k]
     field_output_request = model.FieldOutputRequest(
         name='F-Output-1',
         createStepName='Step-1',
@@ -283,6 +279,12 @@ def M1100_create_step():
         field_output_request.setValuesInStep(stepName='Step-3', frequency=1)
     else:
         field_output_request.setValuesInStep(stepName='Step-3', numIntervals=MY_STEP_3_FOUTPUT_NUM)
+    model.HistoryOutputRequest(
+        name='H-Output-1',
+        createStepName='Step-1',
+        variables=PRESELECT,
+        frequency=1,
+    )
 
 
 def M1110_create_contact():

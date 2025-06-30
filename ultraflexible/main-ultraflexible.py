@@ -159,14 +159,16 @@ def M1060_create_step():
                 (SEMI_AUTOMATIC, MODEL, AT_BEGINNING, MY_MASS_SCALING, 0.0, None, 0, 0, 0.0, 0.0, 0, None),
             )
         )
-    for k in model.fieldOutputRequests.keys():
-        del model.fieldOutputRequests[k]
-    for k in model.historyOutputRequests.keys():
-        del model.historyOutputRequests[k]
     field_output_request = model.FieldOutputRequest(
         name='F-Output-1',
         createStepName='Step-1',
         variables=MY_FOUTPUT_VARIABLES,
+        numIntervals=MY_FOUTPUT_NUM,
+    )
+    model.HistoryOutputRequest(
+        name='H-Output-1',
+        createStepName='Step-1',
+        variables=PRESELECT,
         numIntervals=MY_FOUTPUT_NUM,
     )
 

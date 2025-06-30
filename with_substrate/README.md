@@ -2,6 +2,8 @@
 
 This simulation method includes the substrate as part of the model, providing a more accurate representation of the assembly process. Compared to classical buckling assembly simulations, it requires additional meshing for the substrate and setup of contact interactions, increasing the model's complexity and computational requirements. Nevertheless, with the use of automation scripts, the workflow remains as straightforward as in the classical approach.
 
+This simulation uses implicit static analysis, which is generally efficient and provides acceptable convergence in most cases. However, convergence issues may still arise. For particularly challenging scenarios, try explicit dynamic analysis, although it can be significantly slower. A discussion of the explicit method for such simulations can be found in [Buckling assembly with cohesive behavior](../cohesive/README.md).
+
 <img src="./assets/assembly_with_substrate.gif" width="600">
 
 The FEA model consists of a hyperelastic substrate and a structure, which is initially placed just above the substrate with a small gap. The simulation comprises three steps:
@@ -71,6 +73,8 @@ Three groups of displacement boundary conditions are applied in the simulation:
 ### Step increment controls
 
 Because no external disturbance is applied to the structure, the assembly step (`Step-3`) can be difficult to converge initially. The minimum time increment should be set to a small value (e.g., 1e-10) to allow the solver to use smaller increments during the assembly process.
+
+Convergence issues can be frustrating. If you have tried all possible solutions and still cannot achieve convergence, consider switching to explicit analysis as described in [Buckling assembly with cohesive behavior](../cohesive/README.md).
 
 ## Modeling workflow
 

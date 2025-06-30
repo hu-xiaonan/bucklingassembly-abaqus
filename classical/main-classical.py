@@ -136,10 +136,6 @@ def M1050_create_mesh():
 def M1060_create_model_1_step():
     model = mdb.models['Model-1']
     model.StaticStep(name='Step-1', previous='Initial', nlgeom=OFF)
-    for k in model.fieldOutputRequests.keys():
-        del model.fieldOutputRequests[k]
-    for k in model.historyOutputRequests.keys():
-        del model.historyOutputRequests[k]
     field_output_request = model.FieldOutputRequest(
         name='F-Output-1',
         createStepName='Step-1',
@@ -371,10 +367,6 @@ def M2010_create_model_2_step():
             overlay=ON,
             timeMarks=OFF,
         )
-    for k in model.fieldOutputRequests.keys():
-        del model.fieldOutputRequests[k]
-    for k in model.historyOutputRequests.keys():
-        del model.historyOutputRequests[k]
     field_output_request = model.FieldOutputRequest(
         name='F-Output-1',
         createStepName='Step-1',
@@ -383,6 +375,12 @@ def M2010_create_model_2_step():
     )
     if MY_MODEL_2_FOUTPUT_NUM is not None:
         field_output_request.setValues(numIntervals=MY_MODEL_2_FOUTPUT_NUM)
+    model.HistoryOutputRequest(
+        name='H-Output-1',
+        createStepName='Step-1',
+        variables=PRESELECT,
+        frequency=1,
+    )
 
 
 def M2020_create_model_2_general_contact():
