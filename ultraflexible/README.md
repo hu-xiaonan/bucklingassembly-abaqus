@@ -1,6 +1,6 @@
 # Buckling assembly of ultra-flexible structures
 
-Ultra-flexible structures are extremely difficult to assemble due to their very low stiffness, which can also cause convergence issues in FEA when using implicit analysis. Achieving convergence in such analyses is almost impossible, and even automatic stabilization provides only limited improvement. Although Riks analysis steps are commonly used to address instability, they are still insufficient for handling the buckling of ultra-flexible structures.
+Ultra-flexible structures are extremely difficult to assemble due to their very low stiffness, which can also cause convergence issues in FEA when using implicit analysis. Achieving convergence in such analyses is almost impossible, and even automatic stabilization provides only limited improvement. Although Riks analysis steps are commonly used to address instability, they are still not adequate for handling the buckling of ultra-flexible structures.
 
 - **Typical ultraflexible structure precursor**
 

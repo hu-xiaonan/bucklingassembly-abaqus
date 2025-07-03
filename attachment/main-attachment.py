@@ -1,6 +1,13 @@
 # Copyright (C) 2021-2025, Hu Xiaonan
 # License: MIT License
 
+# This script has been tested with:
+#
+# - Abaqus 2021 (recommended)
+# - Abaqus 6.14 (legacy)
+#
+# Compatibility with other Abaqus versions is not guaranteed.
+
 from abaqus import *
 from abaqusConstants import *
 import mesh
