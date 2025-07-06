@@ -280,12 +280,12 @@ Ultra-flexible structures are extremely difficult to assemble due to its extreme
 
 ### Substrate-included buckling assembly simulation
 
-This simulation approach incorporates the substrate directly into the model, offering a more realistic depiction of the assembly process. For such simulations, see [Substrate-included buckling assembly simulation](./with_substrate/README.md).
+This simulation incorporates the substrate directly into the model, offering a more realistic depiction of the assembly process. For details, see [Substrate-included buckling assembly simulation](./with_substrate/README.md).
 
 <img src="./with_substrate/assets/substrate_deformation.png" width="500">
 
 ### Buckling assembly with cohesive behavior
 
-This assembly method takes into account the cohesive behavior between the precursors and the substrate. For such simulations, see [Buckling assembly with cohesive behavior](./cohesive/README.md).
+This simulation takes into account the cohesive behavior between the precursors and the substrate. For details, see [Buckling assembly with cohesive behavior](./cohesive/README.md).
 
 <img src="./cohesive/assets/final.png" width="500">
