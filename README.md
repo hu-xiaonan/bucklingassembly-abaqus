@@ -286,4 +286,6 @@ This simulation approach incorporates the substrate directly into the model, off
 
 ### Buckling assembly with cohesive behavior
 
-TODO
+This assembly method takes into account the cohesive behavior between the precursors and the substrate. For such simulations, see [Buckling assembly with cohesive behavior](./cohesive/README.md).
+
+<img src="./cohesive/assets/final.png" width="500">
