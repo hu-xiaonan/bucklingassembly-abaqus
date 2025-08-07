@@ -133,7 +133,7 @@ protrusion_sketch = model.ConstrainedSketch(name='__profile__', sheetSize=200.0)
 protrusion_sketch.CircleByCenterPerimeter(center=(0.0, 0.0), point1=(PROTRUSION_RADIUS, 0.0))
 protrusion_part = model.Part(name='PROTRUSION', dimensionality=THREE_D, type=DISCRETE_RIGID_SURFACE)
 protrusion_part.BaseShell(sketch=protrusion_sketch)
-del mdb.models['Model-1'].sketches['__profile__']
+del model.sketches['__profile__']
 del protrusion_sketch
 protrusion_part.ReferencePoint(
     point=protrusion_part.InterestingPoint(edge=protrusion_part.edges[0], rule=CENTER)

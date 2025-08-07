@@ -161,7 +161,7 @@ def M1060_create_substrate_part():
     )
     part = model.Part(name='SUBSTRATE', dimensionality=THREE_D, type=DEFORMABLE_BODY)
     part.BaseSolidExtrude(sketch=sketch, depth=MY_SUBSTRATE_SHELL_THICKNESS)
-    del mdb.models['Model-1'].sketches['__profile__']
+    del model.sketches['__profile__']
 
     viewport = session.viewports['Viewport: 1']
     viewport.setValues(displayedObject=part)
