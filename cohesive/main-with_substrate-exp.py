@@ -24,7 +24,7 @@ from dxf2abq import importdxf
 MY_STRUCTURE_DXF_NAME = 'precursor'  # Do NOT end with `.dxf`.
 MY_STRUCTURE_MATERIAL_DENSITY = 1e-9
 MY_STRUCTURE_MATERIAL_EMOD = 2.5e3
-MY_STRUCTURE_MATERIAL_POISON = 0.35
+MY_STRUCTURE_MATERIAL_POISSON = 0.35
 MY_STRUCTURE_RAYLEIGH_DAMPING_COEFFICIENTS = (1e2, 0.0, 0.0, 0.0)  # (alpha, beta, composite, structural)
 MY_STRUCTURE_SHELL_THICKNESS = 5e-3
 MY_STRUCTURE_MESH_SEED_SIZE = 0.025
@@ -92,7 +92,7 @@ def M1030_create_structure_material_and_section():
     part = model.parts['STRUCTURE']
     material = model.Material(name='Material-1')
     material.Density(table=[[MY_STRUCTURE_MATERIAL_DENSITY]])
-    material.Elastic(table=[[MY_STRUCTURE_MATERIAL_EMOD, MY_STRUCTURE_MATERIAL_POISON]])
+    material.Elastic(table=[[MY_STRUCTURE_MATERIAL_EMOD, MY_STRUCTURE_MATERIAL_POISSON]])
     material.Damping(
         alpha=MY_STRUCTURE_RAYLEIGH_DAMPING_COEFFICIENTS[0],
         beta=MY_STRUCTURE_RAYLEIGH_DAMPING_COEFFICIENTS[1],

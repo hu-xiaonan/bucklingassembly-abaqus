@@ -26,7 +26,7 @@ import numpy as np
 
 MY_DXF_NAME = 'precursor'  # Do NOT end with `.dxf`.
 MY_MATERIAL_EMOD = 2.5e3
-MY_MATERIAL_POISON = 0.35
+MY_MATERIAL_POISSON = 0.35
 MY_SHELL_THICKNESS = 10e-3
 MY_MESH_SEED_SIZE = 0.02
 MY_MESH_SEED_DEVIATION_FACTOR = 0.1  # Set to `None` to disable.
@@ -76,7 +76,7 @@ def M1030_create_material_and_section():
     model = mdb.models['Model-1']
     part = model.parts['STRUCTURE']
     material = model.Material(name='Material-1')
-    material.Elastic(table=[[MY_MATERIAL_EMOD, MY_MATERIAL_POISON]])
+    material.Elastic(table=[[MY_MATERIAL_EMOD, MY_MATERIAL_POISSON]])
     model.HomogeneousShellSection(
         name='Section-1',
         material='Material-1',

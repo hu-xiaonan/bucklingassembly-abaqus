@@ -18,7 +18,7 @@ MY_CARRIER_INSTANCE_NAME = 'STRUCTURE'  # Part instance to which the attachment 
 
 MY_ATTACHMENT_DXF_NAME = 'attachment'
 MY_ATTACHMENT_MATERIAL_EMOD = 79e3
-MY_ATTACHMENT_MATERIAL_POISON = 0.42
+MY_ATTACHMENT_MATERIAL_POISSON = 0.42
 MY_ATTACHMENT_SHELL_THICKNESS = 10e-6
 MY_ATTACHMENT_Z_OFFSET = 10e-3  # Offset relative to the carrier bottom surface.
 MY_ATTACHMENT_MESH_SEED_SIZE = 0.01
@@ -53,7 +53,7 @@ def M1030_create_attachment_material_and_section():
     model = mdb.models[MY_CARRIER_MODEL_NAME]
     part = model.parts['ATTACHMENT']
     material = model.Material(name='Material-ATTACHMENT')
-    material.Elastic(table=[[MY_ATTACHMENT_MATERIAL_EMOD, MY_ATTACHMENT_MATERIAL_POISON]])
+    material.Elastic(table=[[MY_ATTACHMENT_MATERIAL_EMOD, MY_ATTACHMENT_MATERIAL_POISSON]])
     model.HomogeneousShellSection(
         name='Section-ATTACHMENT',
         material='Material-ATTACHMENT',
