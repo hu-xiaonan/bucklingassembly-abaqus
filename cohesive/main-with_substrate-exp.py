@@ -36,7 +36,7 @@ MY_SUBSTRATE_Y_LEN = 0.5
 MY_SUBSTRATE_MATERIAL_DENSITY = 1e-9
 MY_SUBSTRATE_MATERIAL_EMOD = 1e0
 MY_SUBSTRATE_RAYLEIGH_DAMPING_COEFFICIENTS = (1e2, 0.0, 0.0, 0.0)  # (alpha, beta, composite, structural)
-MY_SUBSTRATE_SHELL_THICKNESS = 0.1
+MY_SUBSTRATE_THICKNESS = 0.1
 MY_SUBSTRATE_MESH_SEED_SIZE = 0.025
 MY_SUBSTRATE_MESH_SEED_DEVIATION_FACTOR = 0.1  # Set to `None` to disable.
 MY_SUBSTRATE_MESH_SEED_MIN_SIZE_FACTOR = 0.1
@@ -175,7 +175,7 @@ def M1060_create_substrate_part():
         point2=(+MY_SUBSTRATE_X_LEN/2.0, +MY_SUBSTRATE_Y_LEN/2.0),
     )
     part = model.Part(name='SUBSTRATE', dimensionality=THREE_D, type=DEFORMABLE_BODY)
-    part.BaseSolidExtrude(sketch=sketch, depth=MY_SUBSTRATE_SHELL_THICKNESS)
+    part.BaseSolidExtrude(sketch=sketch, depth=MY_SUBSTRATE_THICKNESS)
     del model.sketches['__profile__']
 
     viewport = session.viewports['Viewport: 1']
@@ -224,7 +224,7 @@ def M1080_create_substrate_instance():
     assembly.Instance(name='SUBSTRATE', part=part, dependent=OFF)
     assembly.translate(
         instanceList=['SUBSTRATE'],
-        vector=(0.0, 0.0, -MY_SUBSTRATE_SHELL_THICKNESS),
+        vector=(0.0, 0.0, -MY_SUBSTRATE_THICKNESS),
     )
 
     viewport = session.viewports['Viewport: 1']
@@ -486,28 +486,28 @@ def M1120_create_bonding_disp_bc():
     substrate_xneg_face_set = assembly.Set(
         name='FACES-SUBSTRATE-XNEG',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            -MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            -MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_THICKNESS-EPS,
             -MY_SUBSTRATE_X_LEN/2.0+EPS, +MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
     substrate_xpos_face_set = assembly.Set(
         name='FACES-SUBSTRATE-XPOS',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            +MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            +MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_THICKNESS-EPS,
             +MY_SUBSTRATE_X_LEN/2.0+EPS, +MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
     substrate_yneg_face_set = assembly.Set(
         name='FACES-SUBSTRATE-YNEG',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            -MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            -MY_SUBSTRATE_X_LEN/2.0-EPS, -MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_THICKNESS-EPS,
             +MY_SUBSTRATE_X_LEN/2.0+EPS, -MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
     substrate_ypos_face_set = assembly.Set(
         name='FACES-SUBSTRATE-YPOS',
         faces=assembly.instances['SUBSTRATE'].faces.getByBoundingBox(
-            -MY_SUBSTRATE_X_LEN/2.0-EPS, +MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_SHELL_THICKNESS-EPS,
+            -MY_SUBSTRATE_X_LEN/2.0-EPS, +MY_SUBSTRATE_Y_LEN/2.0-EPS, -MY_SUBSTRATE_THICKNESS-EPS,
             +MY_SUBSTRATE_X_LEN/2.0+EPS, +MY_SUBSTRATE_Y_LEN/2.0+EPS, +EPS,
         ),
     )
