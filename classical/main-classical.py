@@ -459,6 +459,7 @@ def M2040_create_and_modify_job_2_inp():
         r'((?:\*\*[^\r\n]*?\n)*)(\*Step.*?\*End step)',
         IMPERFECTION_BLOCK + r'\1' + r'\2',
         inp_text,
+        count=1,
         flags=re.DOTALL | re.IGNORECASE,
     )
     if num != 1:
